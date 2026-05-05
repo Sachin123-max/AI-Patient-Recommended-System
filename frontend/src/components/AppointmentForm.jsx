@@ -1,9 +1,15 @@
 import axios from "axios";
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
 const AppointmentForm = () => {
+  const location = useLocation();
+  const doctorIdFromQuery = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("doctorId");
+  }, [location.search]);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -31,17 +37,31 @@ const AppointmentForm = () => {
   ];
 
   const [doctors, setDoctors] = useState([]);
+  const [bookedAppointment, setBookedAppointment] = useState(null);
+
   useEffect(() => {
     const fetchDoctors = async () => {
       const { data } = await axios.get(
         "http://localhost:4000/api/v1/user/doctors",
         { withCredentials: true }
       );
-      setDoctors(data.doctors);
-      console.log(data.doctors);
+      const fetchedDoctors = data.doctors || [];
+      setDoctors(fetchedDoctors);
+
+      // If coming from AI chatbot: /appointment?doctorId=...
+      if (doctorIdFromQuery) {
+        const selected = fetchedDoctors.find((d) => String(d._id) === String(doctorIdFromQuery));
+        if (selected) {
+          setDepartment(selected.doctorDepartment || "Pediatrics");
+          setDoctorFirstName(selected.firstName || "");
+          setDoctorLastName(selected.lastName || "");
+        }
+      }
     };
+
     fetchDoctors();
-  }, []);
+  }, [doctorIdFromQuery]);
+
   const handleAppointment = async (e) => {
     e.preventDefault();
     try {
@@ -69,19 +89,22 @@ const AppointmentForm = () => {
         }
       );
       toast.success(data.message);
-      setFirstName(""),
-        setLastName(""),
-        setEmail(""),
-        setPhone(""),
-        setNic(""),
-        setDob(""),
-        setGender(""),
-        setAppointmentDate(""),
-        setDepartment(""),
-        setDoctorFirstName(""),
-        setDoctorLastName(""),
-        setHasVisited(""),
-        setAddress("");
+      setBookedAppointment(data.appointment || null);
+
+      // Reset form but keep booked confirmation visible
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+      setNic("");
+      setDob("");
+      setGender("");
+      setAppointmentDate("");
+      setDepartment("Pediatrics");
+      setDoctorFirstName("");
+      setDoctorLastName("");
+      setHasVisited(false);
+      setAddress("");
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -91,6 +114,37 @@ const AppointmentForm = () => {
     <>
       <div className="container form-component appointment-form">
         <h2>Appointment</h2>
+
+        {bookedAppointment && (
+          <div
+            style={{
+              marginBottom: 16,
+              padding: 16,
+              border: "1px solid #22c55e",
+              borderRadius: 12,
+              background: "#ecfdf5",
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>✅ Appointment Booked</h3>
+            <p style={{ margin: "6px 0" }}>
+              <strong>Appointment ID:</strong> {bookedAppointment._id}
+            </p>
+            <p style={{ margin: "6px 0" }}>
+              <strong>Doctor:</strong>{" "}
+              {bookedAppointment.doctor?.firstName} {bookedAppointment.doctor?.lastName}
+            </p>
+            <p style={{ margin: "6px 0" }}>
+              <strong>Department:</strong> {bookedAppointment.department}
+            </p>
+            <p style={{ margin: "6px 0" }}>
+              <strong>Date:</strong> {bookedAppointment.appointment_date}
+            </p>
+            <p style={{ margin: "6px 0" }}>
+              <strong>Status:</strong> {bookedAppointment.status || "Pending"}
+            </p>
+          </div>
+        )}
+
         <form onSubmit={handleAppointment}>
           <div>
             <input

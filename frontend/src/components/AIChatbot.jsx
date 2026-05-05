@@ -16,6 +16,7 @@ const AIChatbot = () => {
 
   const [input, setInput] = useState("");
   const [suggestedDoctors, setSuggestedDoctors] = useState([]);
+  const [activeDoctor, setActiveDoctor] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const inputRef = useRef(null);
@@ -47,7 +48,9 @@ const AIChatbot = () => {
         }
       ]);
 
-      setSuggestedDoctors(data.doctors || []);
+      const docs = data.doctors || [];
+      setSuggestedDoctors(docs);
+      setActiveDoctor(docs.length ? docs[0] : null);
       toast.success("Doctors suggested successfully");
 
     } catch (error) {
@@ -144,26 +147,63 @@ const AIChatbot = () => {
           <h3>👨‍⚕️ Suggested Doctors</h3>
 
           {suggestedDoctors.length === 0 ? (
-            <p className="no-data">
-              No suggestions yet. Enter symptoms to get recommendations.
-            </p>
+            <div className="no-data">
+              <p>No doctors found for your symptoms 😔</p>
+              <p><small>Add doctors via Dashboard → Add New Doctor</small></p>
+            </div>
           ) : (
-            suggestedDoctors.map((doc, i) => (
-              <motion.div
-                key={doc._id || i}
-                whileHover={{ scale: 1.02 }}
-                className="doctor-card"
-              >
+            <>
+              {/* Selected doctor details */}
+              {activeDoctor && (
+                <div className="selected-doctor">
+                  <h4>Selected Doctor</h4>
 
-                <h4>Dr. {doc.name}</h4>
-                <p>{doc.specialty}</p>
+                  <div className="selected-doctor-card">
+                    {activeDoctor.docAvatar && (
+                      <img
+                        src={activeDoctor.docAvatar}
+                        alt={`Dr. ${activeDoctor.name}`}
+                        style={{ width: 64, height: 64, borderRadius: "50%" }}
+                      />
+                    )}
 
-                <button onClick={() => bookDoctor(doc._id)}>
-                  Book Appointment
-                </button>
+                    <div>
+                      <p style={{ margin: 0 }}>
+                        <strong>Dr. {activeDoctor.name}</strong>
+                      </p>
+                      <p style={{ margin: 0 }}>{activeDoctor.specialty}</p>
+                      {activeDoctor.phone && (
+                        <p style={{ margin: 0 }}>📞 {activeDoctor.phone}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              </motion.div>
-            ))
+              {/* Doctor list */}
+              {suggestedDoctors.map((doc, i) => (
+                <motion.div
+                  key={doc._id || i}
+                  whileHover={{ scale: 1.02 }}
+                  className="doctor-card"
+                  onClick={() => setActiveDoctor(doc)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <h4>Dr. {doc.name}</h4>
+                  <p>{doc.specialty}</p>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveDoctor(doc);
+                      bookDoctor(doc._id);
+                    }}
+                  >
+                    Book Appointment
+                  </button>
+                </motion.div>
+              ))}
+            </>
           )}
 
         </div>

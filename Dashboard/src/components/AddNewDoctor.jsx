@@ -60,7 +60,6 @@ const AddNewDoctor = () => {
       await axios
         .post("http://localhost:4000/api/v1/user/doctor/addnew", formData, {
           withCredentials: true,
-          headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
           toast.success(res.data.message);
@@ -74,15 +73,19 @@ const AddNewDoctor = () => {
           setDob("");
           setGender("");
           setPassword("");
+          setDoctorDepartment("");
+          setDocAvatar("");
+          setDocAvatarPreview("");
         });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to={"/login"} />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to={"/login"} />;
+  }
+
   return (
     <section className="page">
       <section className="container add-doctor-form">

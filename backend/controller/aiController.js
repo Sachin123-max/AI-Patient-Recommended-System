@@ -16,9 +16,7 @@ export const suggestDoctor = async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     // ✅ FIXED MODEL
-    const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview"
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
     const prompt = `
 Based on these symptoms: "${symptoms}"
@@ -44,6 +42,8 @@ Return only the department name.
         $regex: new RegExp(suggestedDepartment, "i")
       }
     }).select("firstName lastName doctorDepartment docAvatar phone");
+    
+    console.log(`AI suggested: ${suggestedDepartment}, found doctors:`, doctors.length);
 
     return res.status(200).json({
       success: true,

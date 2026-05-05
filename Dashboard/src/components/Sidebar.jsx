@@ -56,7 +56,7 @@ const Sidebar = () => {
   return (
     <>
       <nav
-        style={!isAuthenticated ? { display: "none" } : { display: "flex" }}
+        style={{ display: "flex" }}
         className={show ? "show sidebar" : "sidebar"}
       >
         <div className="links">

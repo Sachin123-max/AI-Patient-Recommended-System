@@ -6,31 +6,38 @@ import { Navigate } from "react-router-dom";
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useContext(Context);
   useEffect(() => {
     const fetchMessages = async () => {
       try {
+        setLoading(true);
         const { data } = await axios.get(
-          "http://localhost:4000/api/v1/message/getall",
+          "http://localhost:4000/api/v1/message/all",
           { withCredentials: true }
         );
-        setMessages(data.messages);
+        setMessages(data.data || []);
       } catch (error) {
-        console.log(error.response.data.message);
+        toast.error(error.response?.data?.message || "Failed to fetch messages");
+        setMessages([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMessages();
   }, []);
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to={"/login"} />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to={"/login"} />;
+  }
 
   return (
     <section className="page messages">
       <h1>MESSAGE</h1>
       <div className="banner">
-        {messages && messages.length > 0 ? (
+        {loading ? (
+          <h1>Loading messages...</h1>
+        ) : messages.length > 0 ? (
           messages.map((element) => {
             return (
               <div className="card" key={element._id}>

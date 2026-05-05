@@ -10,21 +10,29 @@ const Doctors = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const { data } = await axios.get(
-          "http://localhost:5000/api/v1/user/doctors",
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/user/doctors",
           { withCredentials: true }
         );
-        setDoctors(data.doctors);
+        if (response && response.data && response.data.doctors) {
+          setDoctors(response.data.doctors);
+        } else {
+          setDoctors([]);
+        }
       } catch (error) {
-        toast.error(error.response.data.message);
+        console.error("Fetch doctors error:", error);
+        setDoctors([]);
+        if (error.response?.data?.message) {
+          toast.error(error.response.data.message);
+        }
       }
     };
     fetchDoctors();
   }, []);
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to={"/login"} />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to={"/login"} />;
+  }
   return (
     <section className="page doctors">
       <h1>DOCTORS</h1>

@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import fileUpload from "express-fileupload";
 import dotenv from "dotenv";
 import router from "./router/messageRouter.js"; 
 import userRouter from "./router/userRouter.js";
@@ -18,8 +19,8 @@ const app = express();
 // CORS setup
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
-    methods: ["GET", "POST", "DELETE", "PUT"],
+    origin: ["http://localhost:5173","http://localhost:5174"],
+    methods: ["GET", "POST","DELETE","PUT"],
     credentials: true,
   })
 );
@@ -30,8 +31,13 @@ app.use(express.json());
 // URL encoded data
 app.use(express.urlencoded({ extended: true }));
 
-// Cookies
 app.use(cookieParser());
+
+// File upload middleware
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: './tmp/'
+}));
 
 app.use("/api/v1/message", router);
 app.use("/api/v1/user", userRouter);
