@@ -1,85 +1,69 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FaLocationArrow, FaPhone, FaFacebook, FaInstagram } from "react-icons/fa6";
-import { MdEmail } from "react-icons/md";
-import { motion } from "framer-motion";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
 const Footer = () => {
-  const hours = [
-    { id: 1, day: "Monday", time: "9:00 AM - 11:00 PM" },
-    { id: 2, day: "Tuesday", time: "12:00 PM - 12:00 AM" },
-    { id: 3, day: "Wednesday", time: "10:00 AM - 10:00 PM" },
-    { id: 4, day: "Thursday", time: "9:00 AM - 9:00 PM" },
-    { id: 5, day: "Friday", time: "3:00 PM - 9:00 PM" },
-    { id: 6, day: "Saturday", time: "9:00 AM - 3:00 PM" },
-  ];
-
   return (
     <footer className="footer">
 
-      <motion.div
-        className="footer-container"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-
-        {/* 🔹 Logo */}
-        <div className="footer-box">
-          <img src="/logo.png" alt="logo" className="logo-img" />
-          <p>Modern Healthcare System for Easy Appointment Booking.</p>
-
-          <div className="socials">
-            <FaFacebook />
-            <FaInstagram />
-          </div>
+      {/* TOP SECTION */}
+      <div className="footer-top">
+        <div className="footer-about">
+          <h3>Dr Care Homeopathy</h3>
+          <p>
+            Trusted natural healing with personalized care. We focus on treating
+            the root cause using safe and effective homeopathy solutions.
+          </p>
         </div>
 
-        {/* 🔹 Links */}
-        <div className="footer-box">
-          <h3>Quick Links</h3>
-          <Link to="/">Home</Link>
-          <Link to="/appointment">Appointment</Link>
-          <Link to="/about">About</Link>
+        {/* QUICK LINKS */}
+        <div className="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li>Home</li>
+            <li>About</li>
+            <li>Appointment</li>
+            <li>AI Chat</li>
+            <li>Contact</li>
+          </ul>
         </div>
 
-        {/* 🔹 Hours */}
-        <div className="footer-box">
-          <h3>Working Hours</h3>
-          {hours.map((item) => (
-            <div key={item.id} className="time-row">
-              <span>{item.day}</span>
-              <span>{item.time}</span>
-            </div>
-          ))}
+        {/* TREATMENTS */}
+        <div className="footer-links">
+          <h4>Treatments</h4>
+          <ul>
+            <li>Skin Problems</li>
+            <li>Hair Loss</li>
+            <li>Thyroid</li>
+            <li>PCOS</li>
+            <li>Allergies</li>
+          </ul>
         </div>
 
-        {/* 🔹 Contact */}
-        <div className="footer-box">
-          <h3>Contact</h3>
-
-          <div className="contact-item">
-            <FaPhone />
-            <span>999-999-9999</span>
-          </div>
-
-          <div className="contact-item">
-            <MdEmail />
-            <span>zeelab@gmail.com</span>
-          </div>
-
-          <div className="contact-item">
-            <FaLocationArrow />
-            <span>Toronto, Canada</span>
-          </div>
+        {/* CONTACT */}
+        <div className="footer-contact">
+          <h4>Contact</h4>
+          <p><FaPhoneAlt /> +91 99999 99999</p>
+          <p><FaEnvelope /> support@yourclinic.com</p>
+          <p><FaMapMarkerAlt /> Panipat, Haryana, India</p>
         </div>
-
-      </motion.div>
-
-      <div className="footer-bottom">
-        <p>© 2026 ZeeCare Medical Institute. All Rights Reserved.</p>
       </div>
 
+      {/* CLINICS */}
+      <div className="footer-clinics">
+        <h4>Our Clinics</h4>
+        <div className="clinic-grid">
+          <span>Delhi</span>
+          <span>Panipat</span>
+          <span>Gurgaon</span>
+          <span>Noida</span>
+          <span>Chandigarh</span>
+        </div>
+      </div>
+
+      {/* BOTTOM */}
+      <div className="footer-bottom">
+        <p>© 2026 Your Clinic. All rights reserved.</p>
+      </div>
     </footer>
   );
 };

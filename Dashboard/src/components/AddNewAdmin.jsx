@@ -48,71 +48,88 @@ const AddNewAdmin = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    return <Navigate to={"/login"} />;
-  }
+  // if (!isAuthenticated) {
+  //   return <Navigate to={"/login"} />;
+  // }
 
   return (
     <section className="page">
       <section className="container form-component add-admin-form">
-      <img src="/logo.png" alt="logo" className="logo"/>
+        <img src="/logo.png" alt="logo" className="logo" />
         <h1 className="form-title">ADD NEW ADMIN</h1>
+
         <form onSubmit={handleAddNewAdmin}>
           <div>
             <input
               type="text"
               placeholder="First Name"
               value={firstName}
+              required
               onChange={(e) => setFirstName(e.target.value)}
             />
             <input
               type="text"
               placeholder="Last Name"
               value={lastName}
+              required
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
+
           <div>
             <input
-              type="text"
+              type="email"
               placeholder="Email"
               value={email}
+              required
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="number"
               placeholder="Mobile Number"
               value={phone}
+              required
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
+
           <div>
             <input
               type="number"
               placeholder="NIC"
               value={nic}
+              required
               onChange={(e) => setNic(e.target.value)}
             />
             <input
-              type={"date"}
+              type="date"
               placeholder="Date of Birth"
               value={dob}
+              required
               onChange={(e) => setDob(e.target.value)}
             />
           </div>
+
           <div>
-            <select value={gender} onChange={(e) => setGender(e.target.value)}>
+            <select
+              value={gender}
+              required
+              onChange={(e) => setGender(e.target.value)}
+            >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
+
             <input
               type="password"
               placeholder="Password"
               value={password}
+              required
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+
           <div style={{ justifyContent: "center", alignItems: "center" }}>
             <button type="submit">ADD NEW ADMIN</button>
           </div>

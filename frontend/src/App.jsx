@@ -3,7 +3,6 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import Appointment from "./Pages/Appointment";
-import AboutUs from "./Pages/AboutUs";
 import Register from "./Pages/Register";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
@@ -13,6 +12,7 @@ import axios from "axios";
 import { Context } from "./main";
 import Login from "./Pages/Login";
 import AIChatbotPage from "./Pages/AIChatbotPage";
+import AboutUs from "./Pages/AboutUs";
 const App = () => {
   const { isAuthenticated, setIsAuthenticated, setUser } =
     useContext(Context);

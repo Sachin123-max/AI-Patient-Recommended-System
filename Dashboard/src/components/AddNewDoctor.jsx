@@ -30,6 +30,7 @@ const AddNewDoctor = () => {
     "Radiology",
     "Physical Therapy",
     "Dermatology",
+    "General Physician",
     "ENT",
   ];
 

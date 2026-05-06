@@ -24,6 +24,151 @@ const AIChatbot = () => {
   const navigate = useNavigate();
 
   // ================= SEND MESSAGE =================
+  const getBasicMedicineInfo = (symptomsRaw) => {
+    const s = (symptomsRaw || "").toLowerCase();
+
+    // helper
+    const redFlags = [
+      "Severe breathing difficulty / chest pain",
+      "Very high fever (>103°F / 39.4°C) or fever > 3 days",
+      "Blood in cough/vomit/stool, severe dehydration",
+      "Severe headache with neck stiffness, confusion, fainting",
+      "Symptoms in infants/elderly or known serious conditions",
+    ];
+
+    const response = {
+      title: "Basic care guidance (not a diagnosis)",
+      bullets: [],
+      medicines: [],
+      precautions: [],
+      redFlags,
+    };
+
+    const hasAny = (...keys) => keys.some((k) => s.includes(k));
+
+    // Fever / Body ache
+    if (hasAny("fever", "temperature", "chills", "body ache", "bodyache", "aches")) {
+      response.title = "Fever / Body ache: basic care";
+      response.medicines = [
+        "Paracetamol (Acetaminophen) for fever/pain (as per label; avoid overdose)",
+        "ORS (Oral Rehydration Salts) or plenty of fluids",
+      ];
+      response.bullets = [
+        "Rest and keep yourself hydrated",
+        "Light meals; avoid alcohol",
+        "Cool compress if uncomfortable",
+      ];
+      response.precautions = [
+        "Avoid taking multiple cold/fever combination medicines together",
+        "If you have liver disease, ask a doctor before paracetamol",
+      ];
+      return response;
+    }
+
+    // Headache
+    if (hasAny("headache", "migraine", "head pain")) {
+      response.title = "Headache: basic care";
+      response.medicines = [
+        "Paracetamol or Ibuprofen (if suitable) as per label",
+      ];
+      response.bullets = [
+        "Drink water and rest in a dark room",
+        "Avoid strong smells/screens if it worsens",
+        "If migraine-like: consider cold compress",
+      ];
+      response.precautions = [
+        "Avoid frequent painkiller use (can worsen headaches)",
+        "If severe sudden headache or neurological symptoms → urgent care",
+      ];
+      return response;
+    }
+
+    // Cough / Cold
+    if (hasAny("cough", "cold", "sneezing", "runny nose", "rhinitis", "phlegm", "phlegm")) {
+      response.title = "Cough / Cold: basic care";
+      response.medicines = [
+        "Warm fluids + steam inhalation (if suitable)",
+        "For dry cough: cough suppressant (as per label)",
+        "For mucus/phlegm: expectorant (as per label) + hydration",
+      ];
+      response.bullets = [
+        "Gargle with warm salt water for throat irritation",
+        "Honey in warm water (avoid for children < 1 year)",
+        "Sleep with head slightly elevated",
+      ];
+      response.precautions = [
+        "If wheezing/shortness of breath: seek medical help",
+        "Avoid antibiotics unless prescribed",
+      ];
+      return response;
+    }
+
+    // Sore throat
+    if (hasAny("sore throat", "throat pain", "throat", "tonsil")) {
+      response.title = "Sore throat: basic care";
+      response.medicines = [
+        "Warm salt-water gargles",
+        "Paracetamol or Ibuprofen for pain (as per label)",
+        "Throat lozenges (as per label) if available",
+      ];
+      response.bullets = [
+        "Hydrate well; avoid spicy/very hot foods",
+        "Rest your voice",
+      ];
+      response.precautions = [
+        "If high fever, pus on tonsils, or symptoms > 3 days → see a doctor",
+      ];
+      return response;
+    }
+
+    // Stomach / Acidity / loose motions (simple)
+    if (hasAny("acidity", "heartburn", "gas", "indigestion", "stomach", "vomit", "nausea")) {
+      response.title = "Stomach discomfort: basic care";
+      response.medicines = [
+        "Antacid as per label (for acidity)",
+        "Oral rehydration if loose motions/vomiting",
+      ];
+      response.bullets = [
+        "Small sips of water/ORS; avoid oily/spicy foods",
+        "Eat light (curd/banana/rice) if tolerated",
+      ];
+      response.precautions = [
+        "If severe abdominal pain, blood in vomit/stool, or dehydration → urgent care",
+      ];
+      return response;
+    }
+
+    if (hasAny("diarrhea", "loose motions", "vomiting")) {
+      response.title = "Diarrhea / vomiting: basic care";
+      response.medicines = [
+        "ORS (priority) + plenty of fluids",
+        "Zinc may help (as per local guidance/label)",
+      ];
+      response.bullets = [
+        "Avoid dehydration; small frequent sips",
+        "Avoid dairy/very oily foods temporarily",
+      ];
+      response.precautions = [
+        "If blood in stool, high fever, or symptoms > 48 hours → doctor",
+      ];
+      return response;
+    }
+
+    // Default
+    response.title = "Basic medicine info (general)";
+    response.medicines = ["Paracetamol for fever/pain (as per label)"];
+    response.bullets = [
+      "Hydration + rest",
+      "Avoid self-medicating antibiotics",
+      "Monitor temperature and symptom changes",
+    ];
+    response.precautions = [
+      "If symptoms worsen or last > 3 days, consult a doctor",
+    ];
+
+    return response;
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -51,6 +196,23 @@ const AIChatbot = () => {
       const docs = data.doctors || [];
       setSuggestedDoctors(docs);
       setActiveDoctor(docs.length ? docs[0] : null);
+
+      // If no doctors found, also write basic medicine/self-care info into chat
+      if (!docs.length) {
+        const basic = getBasicMedicineInfo(input);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "ai",
+            content: `${basic.title}\n\nMedicines/OTC ideas:\n- ${basic.medicines.join(
+              "\n- "
+            )}\n\nPrecautions:\n- ${basic.precautions.join("\n- ")}\n\nRed flags (seek medical help if any):\n- ${basic.redFlags.join(
+              "\n- "
+            )}`,
+          },
+        ]);
+      }
+
       toast.success("Doctors suggested successfully");
 
     } catch (error) {
@@ -144,11 +306,11 @@ const AIChatbot = () => {
         {/* ================= DOCTOR SECTION ================= */}
         <div className="doctor-section">
 
-          <h3>👨‍⚕️ Suggested Doctors</h3>
+          <h3> Suggested Doctors</h3>
 
           {suggestedDoctors.length === 0 ? (
             <div className="no-data">
-              <p>No doctors found for your symptoms 😔</p>
+              <p>No doctors found for your symptoms </p>
               <p><small>Add doctors via Dashboard → Add New Doctor</small></p>
             </div>
           ) : (

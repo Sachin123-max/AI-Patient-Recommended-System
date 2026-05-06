@@ -14,10 +14,6 @@ const Biography = ({imageUrl}) => {
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
             blanditiis sequi aperiam. Debitis fugiat harum ex maxime illo
             consequatur mollitia voluptatem omnis nihil nesciunt beatae esse
-            ipsam, sapiente totam aspernatur porro ducimus aperiam nisi. Ex
-            magnam voluptatum consectetur reprehenderit fugiat recusandae aut
-            similique illum natus velit, praesentium nostrum nesciunt. Deleniti,
-            nesciunt laboriosam totam iusto!
           </p>
           <p>We are all in 2024!</p>
           <p>We are working on a MERN STACK PROJECT.</p>

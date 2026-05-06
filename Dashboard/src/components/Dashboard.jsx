@@ -8,58 +8,45 @@ import { AiFillCloseCircle } from "react-icons/ai";
 
 const Dashboard = () => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [totalAppointments, setTotalAppointments] = useState(0);
-  const [totalDoctors, setTotalDoctors] = useState(0);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        setLoading(true);
         const { data } = await axios.get(
           "http://localhost:4000/api/v1/appointment/getall",
           { withCredentials: true }
         );
-        setAppointments(data.appointments || []);
-        setTotalAppointments(data.appointments?.length || 0);
-
-        // Compute unique doctors (assuming doctor field exists)
-        const doctors = [...new Set(data.appointments?.map(apt => `${apt.doctor?.firstName} ${apt.doctor?.lastName}` || apt.doctorId)?.filter(Boolean))];
-        setTotalDoctors(doctors.length);
+        setAppointments(data.appointments);
       } catch (error) {
         setAppointments([]);
-        toast.error("Failed to fetch appointments");
-      } finally {
-        setLoading(false);
       }
     };
     fetchAppointments();
   }, []);
 
-  const handleUpdateStatus = async (appointmentId, hasVisited) => {
+  const handleUpdateStatus = async (appointmentId, status) => {
     try {
       const { data } = await axios.put(
         `http://localhost:4000/api/v1/appointment/update/${appointmentId}`,
-        { hasVisited },
+        { status },
         { withCredentials: true }
       );
       setAppointments((prevAppointments) =>
         prevAppointments.map((appointment) =>
           appointment._id === appointmentId
-            ? { ...appointment, hasVisited }
+            ? { ...appointment, status }
             : appointment
         )
       );
       toast.success(data.message);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Update failed');
+      toast.error(error.response.data.message);
     }
   };
 
   const { isAuthenticated, admin } = useContext(Context);
-
-  if (!isAuthenticated || !admin) {
-    return <Navigate to="/login" />;
+  if (!isAuthenticated) {
+    return <Navigate to={"/login"} />;
   }
 
   return (
@@ -85,11 +72,11 @@ const Dashboard = () => {
           </div>
           <div className="secondBox">
             <p>Total Appointments</p>
-            <h3>{totalAppointments}</h3>
+            <h3>1500</h3>
           </div>
           <div className="thirdBox">
             <p>Registered Doctors</p>
-            <h3>{totalDoctors}</h3>
+            <h3>10</h3>
           </div>
         </div>
         <div className="banner">
@@ -106,35 +93,46 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr><td colSpan="6" className="text-center py-4">Loading...</td></tr>
-              ) : appointments.length === 0 ? (
-                <tr><td colSpan="6" className="text-center py-4">No appointments found.</td></tr>
-              ) : (
-                appointments.map((appointment) => (
-                  <tr key={appointment._id}>
-                    <td>{`${appointment.firstName || appointment.patientId?.firstName} ${appointment.lastName || appointment.patientId?.lastName}`}</td>
-                    <td>{new Date(appointment.appointment_date).toLocaleDateString()}</td>
-                    <td>{appointment.doctor ? `${appointment.doctor.firstName} ${appointment.doctor.lastName}` : (appointment.doctorId?.firstName ? `${appointment.doctorId.firstName} ${appointment.doctorId.lastName}` : 'N/A')}</td>
-                    <td>{appointment.department || 'N/A'}</td>
-                    <td>
-                      <span className={`status-badge status-${appointment.status?.toLowerCase()}`}>
-                        {appointment.status || 'Pending'}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                      onClick={() => handleUpdateStatus(appointment._id, !appointment.hasVisited)}
-                      className={`visited-btn ${appointment.hasVisited ? 'visited' : ''}`}
-                    >
-                      {appointment.hasVisited ? <GoCheckCircleFill /> : <AiFillCloseCircle />}
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              {appointments && appointments.length > 0
+                ? appointments.map((appointment) => (
+                    <tr key={appointment._id}>
+                      <td>{`${appointment.firstName} ${appointment.lastName}`}</td>
+                      <td>{appointment.appointment_date.substring(0, 16)}</td>
+                      <td>{`${appointment.doctor.firstName} ${appointment.doctor.lastName}`}</td>
+                      <td>{appointment.department}</td>
+                      <td>
+                        <select
+                          className={
+                            appointment.status === "Pending"
+                              ? "value-pending"
+                              : appointment.status === "Accepted"
+                              ? "value-accepted"
+                              : "value-rejected"
+                          }
+                          value={appointment.status}
+                          onChange={(e) =>
+                            handleUpdateStatus(appointment._id, e.target.value)
+                          }
+                        >
+                          <option value="Pending" className="value-pending">
+                            Pending
+                          </option>
+                          <option value="Accepted" className="value-accepted">
+                            Accepted
+                          </option>
+                          <option value="Rejected" className="value-rejected">
+                            Rejected
+                          </option>
+                        </select>
+                      </td>
+                      <td>{appointment.hasVisited === true ? <GoCheckCircleFill className="green"/> : <AiFillCloseCircle className="red"/>}</td>
+                    </tr>
+                  ))
+                : "No Appointments Found!"}
             </tbody>
           </table>
+
+          {}
         </div>
       </section>
     </>

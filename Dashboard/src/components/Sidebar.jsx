@@ -6,6 +6,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { FaUserDoctor } from "react-icons/fa6";
 import { MdAddModerator } from "react-icons/md";
 import { IoPersonAddSharp } from "react-icons/io5";
+import { FaUsers } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Context } from "../main";
@@ -33,7 +34,8 @@ const Sidebar = () => {
   const navigateTo = useNavigate();
 
   const gotoHomePage = () => {
-    navigateTo("/");
+    // Redirect to frontend Home page (different React app)
+    window.location.href = "http://localhost:5173/";
     setShow(!show);
   };
   const gotoDoctorsPage = () => {

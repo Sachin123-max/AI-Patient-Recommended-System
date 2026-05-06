@@ -574,3 +574,76 @@ input[type="time"]:before {
   color: #444;
   margin-right: 0.5em;
 }
+
+
+/* messsahe */
+.modern-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.glass-card {
+  width: 100%;
+  max-width: 1100px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 25px;
+  color: white;
+}
+
+.search-box {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin: 15px 0;
+  outline: none;
+}
+
+.message-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 15px;
+}
+
+.message-card {
+  background: rgba(255,255,255,0.1);
+  padding: 15px;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+
+.message-card:hover {
+  transform: translateY(-5px);
+}
+
+.message-text {
+  margin-top: 10px;
+  font-style: italic;
+  color: #ddd;
+}
+
+.status {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.delete-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #ff4d4d;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.delete-btn:hover {
+  background: #e60000;
+}
